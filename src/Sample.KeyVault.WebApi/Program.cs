@@ -5,8 +5,7 @@ using Serilog;
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    SerilogExtension.AddSerilogApi(builder.Configuration);
-    builder.Host.UseSerilog(Log.Logger);
+    builder.AddSerilog();
     builder.AddKeyVault();
 
     builder.Services.AddRouting(options => options.LowercaseUrls = true);
@@ -18,7 +17,6 @@ try
     var app = builder.Build();
 
     app.UseMiddleware<ErrorHandlingMiddleware>();
-    app.UseMiddleware<RequestSerilLogMiddleware>();
 
     if (app.Environment.IsDevelopment())
     {

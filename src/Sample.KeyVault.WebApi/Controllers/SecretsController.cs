@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Sample.KeyVault.WebApi.Core.Interfaces;
+using Sample.KeyVault.WebApi.ViewModels;
 
 namespace Sample.KeyVault.WebApi.Controllers;
 
@@ -16,10 +17,26 @@ public class SecretsController : ControllerBase
         _keyVaultService = keyVaultService;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] string key)
+    [HttpGet("configuration")]
+    public async Task<IActionResult> GetSecretFromConfiguration([FromQuery] GetSecretsViewModel model)
     {
-        var secret = await _keyVaultService.GetSecretByKeyAsync(key);
+        var secret = await _keyVaultService.GetSecretByKeyAsync(model.Key);
+
+        return Ok(secret);
+    }
+
+    [HttpGet("key-vault")]
+    public async Task<IActionResult> GetSecretFromAzure([FromQuery] GetSecretsViewModel model)
+    {
+        var secret = await _secretsService.GetSecretsAsync(model.Key);
+
+        return Ok(secret);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> PostSecret([FromBody] SaveSecretsViewModel model)
+    {
+        var secret = await _secretsService.SetSecretAsync(model.Key, model.Value);
 
         return Ok(secret);
     }
